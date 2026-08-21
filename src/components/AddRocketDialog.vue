@@ -25,7 +25,7 @@
 
       <v-divider class="my-2 border-subtle" />
 
-      <!-- Compact Form Body -->
+      <!-- Form Body with Strict Validation -->
       <v-card-text class="px-4 py-1">
         <v-form ref="formRef" v-model="isFormValid" @submit.prevent="handleSubmit">
           <v-row dense>
@@ -71,7 +71,7 @@
               />
             </v-col>
 
-            <!-- Cost & Maiden Flight Date -->
+            <!-- Cost per Launch (Numeric Validation) -->
             <v-col cols="6">
               <v-text-field
                 v-model="form.launch_cost"
@@ -82,24 +82,26 @@
                 rounded="lg"
                 hide-details="auto"
                 class="mb-2"
-                :rules="[rules.numericOrEmpty]"
+                :rules="[rules.positiveNumberOrEmpty]"
               />
             </v-col>
 
+            <!-- Maiden Flight Date (Date Format Validation) -->
             <v-col cols="6">
               <v-text-field
                 v-model="form.maiden_flight"
                 label="First Flight Date"
-                placeholder="e.g. 2026-10-15"
+                placeholder="YYYY-MM-DD"
                 variant="outlined"
                 density="compact"
                 rounded="lg"
                 hide-details="auto"
                 class="mb-2"
+                :rules="[rules.dateFormatOrEmpty]"
               />
             </v-col>
 
-            <!-- Image URL -->
+            <!-- Image URL (URL Validation) -->
             <v-col cols="12">
               <v-text-field
                 v-model="form.image_url"
@@ -110,15 +112,16 @@
                 rounded="lg"
                 hide-details="auto"
                 class="mb-2"
+                :rules="[rules.urlOrEmpty]"
               />
             </v-col>
 
-            <!-- Description -->
+            <!-- Description (Required) -->
             <v-col cols="12">
               <v-textarea
                 v-model="form.description"
                 label="Rocket Description *"
-                placeholder="Provide a brief description of the rocket's mission and specs..."
+                placeholder="Provide details about the rocket's mission and specs..."
                 variant="outlined"
                 density="compact"
                 rows="2"
@@ -164,7 +167,6 @@
           rounded="lg"
           size="small"
           class="text-none font-weight-semibold px-4 action-btn"
-          :disabled="!isFormValid"
           @click="handleSubmit"
         >
           Add to Fleet
@@ -204,8 +206,24 @@ const initialFormState = (): NewRocketInput => ({
 const form = reactive<NewRocketInput>(initialFormState())
 
 const rules = {
-  required: (v: string) => Boolean(v && v.trim().length > 0) || 'Required field.',
-  numericOrEmpty: (v: string) => !v || !isNaN(Number(v)) || 'Must be a number.',
+  required: (v: string) => Boolean(v && v.trim().length > 0) || 'This field is required.',
+  positiveNumberOrEmpty: (v: string) => {
+    if (!v || v.trim() === '') return true
+    const clean = v.trim()
+    const isNum = /^\d+(\.\d+)?$/.test(clean)
+    return (isNum && Number(clean) >= 0) || 'Must be a valid positive number (e.g. 10000000).'
+  },
+  dateFormatOrEmpty: (v: string) => {
+    if (!v || v.trim() === '') return true
+    const isFormat = /^\d{4}-\d{2}-\d{2}$/.test(v.trim())
+    if (!isFormat) return 'Format must be YYYY-MM-DD (e.g. 2026-10-15).'
+    const date = new Date(v.trim())
+    return !isNaN(date.getTime()) || 'Invalid calendar date.'
+  },
+  urlOrEmpty: (v: string) => {
+    if (!v || v.trim() === '') return true
+    return /^https?:\/\/.+/.test(v.trim()) || 'Must be a valid URL starting with http:// or https://'
+  },
 }
 
 watch(
@@ -213,6 +231,7 @@ watch(
   (newVal) => {
     if (newVal) {
       Object.assign(form, initialFormState())
+      formRef.value?.resetValidation()
     }
   }
 )
@@ -221,8 +240,11 @@ function closeDialog() {
   emit('update:modelValue', false)
 }
 
-function handleSubmit() {
-  if (!form.full_name || !form.description) return
+async function handleSubmit() {
+  if (!formRef.value) return
+
+  const { valid } = await formRef.value.validate()
+  if (!valid) return
 
   const newRocket: NewRocketInput = {
     name: form.name?.trim() || form.full_name.trim(),
@@ -231,7 +253,7 @@ function handleSubmit() {
     image_url: form.image_url?.trim() || undefined,
     launch_cost: form.launch_cost?.trim() || undefined,
     country_code: form.country_code?.trim() || 'USA',
-    maiden_flight: form.maiden_flight || undefined,
+    maiden_flight: form.maiden_flight?.trim() || undefined,
     active: form.active ?? true,
   }
 
