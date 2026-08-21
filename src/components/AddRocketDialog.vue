@@ -1,29 +1,28 @@
 <template>
   <v-dialog
     :model-value="modelValue"
-    max-width="600"
+    max-width="580"
     persistent
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <v-card rounded="lg" class="pa-2">
-      <v-card-title class="d-flex justify-space-between align-center px-4 pt-4 pb-2">
-        <div class="d-flex align-center">
-          <v-icon icon="mdi-rocket-launch" color="primary" class="mr-2" />
-          <span class="text-h6 font-weight-bold">Add New Rocket</span>
+    <v-card rounded="2xl" class="dialog-card pa-2 bg-white">
+      <v-card-title class="d-flex justify-space-between align-center px-4 pt-4 pb-1">
+        <div>
+          <span class="text-h6 font-weight-bold text-slate-900 d-block">Add New Rocket</span>
+          <span class="text-caption text-slate-500 font-weight-normal">
+            Add a custom launch vehicle configuration to your local fleet.
+          </span>
         </div>
         <v-btn
           icon="mdi-close"
           variant="text"
-          density="comfortable"
+          size="small"
+          class="text-slate-400"
           @click="closeDialog"
         />
       </v-card-title>
 
-      <v-card-subtitle class="px-4 text-caption text-medium-emphasis">
-        Create a custom rocket to display in the running session.
-      </v-card-subtitle>
-
-      <v-divider class="my-2" />
+      <v-divider class="my-3 border-subtle" />
 
       <v-card-text class="px-4 py-2">
         <v-form ref="formRef" v-model="isFormValid" @submit.prevent="handleSubmit">
@@ -32,12 +31,12 @@
             <v-col cols="12">
               <v-text-field
                 v-model="form.full_name"
-                label="Rocket Full Name *"
-                placeholder="e.g. Starship Super Heavy Block 2"
+                label="Full Name *"
+                placeholder="e.g. Starship Block 2"
                 variant="outlined"
                 density="comfortable"
+                rounded="lg"
                 :rules="[rules.required]"
-                prepend-inner-icon="mdi-format-title"
               />
             </v-col>
 
@@ -49,7 +48,7 @@
                 placeholder="e.g. Starship"
                 variant="outlined"
                 density="comfortable"
-                prepend-inner-icon="mdi-tag-outline"
+                rounded="lg"
               />
             </v-col>
 
@@ -61,7 +60,7 @@
                 placeholder="e.g. USA"
                 variant="outlined"
                 density="comfortable"
-                prepend-inner-icon="mdi-flag-outline"
+                rounded="lg"
               />
             </v-col>
 
@@ -73,7 +72,7 @@
                 placeholder="e.g. 10000000"
                 variant="outlined"
                 density="comfortable"
-                prepend-inner-icon="mdi-currency-usd"
+                rounded="lg"
                 :rules="[rules.numericOrEmpty]"
               />
             </v-col>
@@ -86,7 +85,7 @@
                 placeholder="e.g. 2026-10-15"
                 variant="outlined"
                 density="comfortable"
-                prepend-inner-icon="mdi-calendar"
+                rounded="lg"
               />
             </v-col>
 
@@ -98,8 +97,8 @@
                 placeholder="https://example.com/rocket.jpg"
                 variant="outlined"
                 density="comfortable"
-                prepend-inner-icon="mdi-image-outline"
-                hint="Leave empty to use the default high-quality space launch image"
+                rounded="lg"
+                hint="Leave empty to use high-res default fallback image"
                 persistent-hint
               />
             </v-col>
@@ -109,17 +108,17 @@
               <v-textarea
                 v-model="form.description"
                 label="Rocket Description *"
-                placeholder="Provide a detailed description of the rocket's mission, stages, and specs..."
+                placeholder="Provide details about the rocket's stages, payloads, and mission profile..."
                 variant="outlined"
                 density="comfortable"
                 rows="3"
+                rounded="lg"
                 :rules="[rules.required]"
-                prepend-inner-icon="mdi-text-long"
               />
             </v-col>
 
             <!-- Status Switch -->
-            <v-col cols="12">
+            <v-col cols="12" class="pt-2">
               <v-switch
                 v-model="form.active"
                 color="success"
@@ -132,12 +131,14 @@
         </v-form>
       </v-card-text>
 
-      <v-divider class="my-2" />
+      <v-divider class="my-3 border-subtle" />
 
-      <v-card-actions class="px-4 pb-3 pt-2">
+      <v-card-actions class="px-4 pb-4 pt-1">
         <v-spacer />
         <v-btn
           variant="text"
+          rounded="lg"
+          class="text-none font-weight-medium text-slate-600"
           @click="closeDialog"
         >
           Cancel
@@ -145,11 +146,12 @@
         <v-btn
           color="primary"
           variant="flat"
+          rounded="lg"
+          class="text-none font-weight-semibold px-5 action-btn"
           :disabled="!isFormValid"
-          prepend-icon="mdi-plus"
           @click="handleSubmit"
         >
-          Add Rocket
+          Add to Fleet
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -221,3 +223,19 @@ function handleSubmit() {
   closeDialog()
 }
 </script>
+
+<style scoped>
+.dialog-card {
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.border-subtle {
+  border-color: #f1f5f9 !important;
+}
+
+.action-btn {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+</style>

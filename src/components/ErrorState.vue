@@ -1,38 +1,32 @@
 <template>
-  <v-card
-    color="error"
-    variant="tonal"
-    rounded="lg"
-    class="pa-6 text-center my-8 mx-auto"
-    max-width="600"
-  >
-    <v-avatar color="error" size="64" class="mb-4" variant="flat">
-      <v-icon icon="mdi-alert-circle-outline" size="36" color="white" />
-    </v-avatar>
+  <div class="error-container pa-8 text-center my-8 mx-auto rounded-2xl bg-white">
+    <div class="error-icon-wrapper mb-4">
+      <v-icon icon="mdi-alert-circle-outline" size="32" color="error" />
+    </div>
 
-    <h3 class="text-h6 font-weight-bold mb-2">
-      {{ title || 'Failed to Load Rocket Data' }}
+    <h3 class="text-h6 font-weight-bold text-slate-900 mb-2">
+      {{ title || 'Unable to Load Rockets' }}
     </h3>
 
-    <p class="text-body-2 text-medium-emphasis mb-6">
-      {{ message || 'An error occurred while communicating with the Launch Library API. Please check your network connection and try again.' }}
+    <p class="text-body-2 text-slate-500 mb-6 max-w-400 mx-auto">
+      {{ message || 'There was a problem communicating with the Launch Library API. Please check your network connection and try again.' }}
     </p>
 
-    <div class="d-flex justify-center ga-3">
+    <div class="d-flex justify-center align-center ga-3">
       <v-btn
-        color="error"
+        color="primary"
         variant="flat"
+        rounded="lg"
         prepend-icon="mdi-refresh"
-        rounded="pill"
-        class="px-6"
+        class="text-none font-weight-semibold px-5 action-btn"
         @click="$emit('retry')"
       >
-        Retry Again
+        Retry
       </v-btn>
 
       <slot name="actions" />
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -45,3 +39,30 @@ defineEmits<{
   (e: 'retry'): void
 }>()
 </script>
+
+<style scoped>
+.error-container {
+  border: 1px solid #fee2e2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  max-width: 520px;
+}
+
+.error-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background-color: #fef2f2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.max-w-400 {
+  max-width: 400px;
+}
+
+.action-btn {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+</style>

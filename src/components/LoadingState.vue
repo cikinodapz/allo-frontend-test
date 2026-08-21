@@ -9,22 +9,22 @@
         sm="6"
         lg="4"
       >
-        <v-card rounded="lg" elevation="2" class="h-100">
+        <div class="skeleton-card rounded-xl overflow-hidden bg-white pa-4">
           <v-skeleton-loader
-            type="image, article, actions"
-            class="bg-surface"
+            type="image, article"
+            class="bg-transparent"
           />
-        </v-card>
+        </div>
       </v-col>
     </v-row>
 
     <!-- Detail Skeleton View -->
-    <v-card v-else rounded="lg" elevation="2" class="pa-6">
+    <div v-else class="skeleton-card rounded-2xl overflow-hidden bg-white pa-8">
       <v-skeleton-loader
-        type="heading, subtitle, image, paragraph, paragraph, actions"
-        class="bg-surface"
+        type="image, heading, paragraph, paragraph"
+        class="bg-transparent"
       />
-    </v-card>
+    </div>
   </div>
 </template>
 
@@ -38,3 +38,9 @@ withDefaults(
   }
 )
 </script>
+
+<style scoped>
+.skeleton-card {
+  border: 1px solid #e2e8f0;
+}
+</style>

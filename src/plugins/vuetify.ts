@@ -1,7 +1,7 @@
 /**
  * plugins/vuetify.ts
  *
- * Framework documentation: https://vuetifyjs.com
+ * Minimalist, elegant light theme configuration
  */
 
 // Styles
@@ -13,21 +13,32 @@ import { createVuetify } from 'vuetify'
 
 export default createVuetify({
   theme: {
-    defaultTheme: 'dark',
+    defaultTheme: 'light',
     themes: {
-      dark: {
-        dark: true,
+      light: {
+        dark: false,
         colors: {
-          primary: '#3b82f6', // Electric space blue
-          secondary: '#6366f1', // Indigo accent
-          surface: '#111827', // Slate 900
-          background: '#090d16', // Deep space dark background
+          primary: '#0f172a', // Slate 900 - sleek obsidian
+          secondary: '#475569', // Slate 600
+          accent: '#2563eb', // Clean Royal Blue
+          background: '#f8fafc', // Slate 50 - clean off-white
+          surface: '#ffffff', // Pure white
+          'surface-variant': '#f1f5f9', // Slate 100
+          'on-surface-variant': '#64748b',
           error: '#ef4444',
-          info: '#0ea5e9',
-          success: '#10b981',
-          warning: '#f59e0b',
+          info: '#0284c7',
+          success: '#059669', // Emerald
+          warning: '#d97706',
         },
       },
+    },
+  },
+  defaults: {
+    VCard: {
+      elevation: 0,
+    },
+    VBtn: {
+      elevation: 0,
     },
   },
 })

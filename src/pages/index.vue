@@ -1,43 +1,35 @@
 <template>
-  <v-container class="py-6">
-    <!-- Header Banner -->
-    <v-card
-      class="mb-6 pa-6 hero-card text-white"
-      rounded="xl"
-      elevation="4"
-    >
-      <v-row align="center">
-        <v-col cols="12" md="8">
-          <div class="d-flex align-center mb-2">
-            <v-chip color="primary" variant="flat" size="small" class="mr-2 font-weight-bold">
-              SpaceX Launch Vehicles
-            </v-chip>
-            <span class="text-caption text-grey-lighten-1">Powered by Launch Library 2</span>
-          </div>
-          <h1 class="text-h4 text-sm-h3 font-weight-black mb-2">
-            SpaceX Rockets Catalog
-          </h1>
-          <p class="text-body-1 text-grey-lighten-1 mb-0 max-w-600">
-            Explore orbital rocket configurations developed by SpaceX — from early Falcon 1 test flights to reusable Falcon 9, Falcon Heavy, and Starship.
-          </p>
-        </v-col>
-        <v-col cols="12" md="4" class="text-md-right mt-4 mt-md-0">
-          <v-btn
-            color="primary"
-            size="large"
-            rounded="pill"
-            prepend-icon="mdi-plus"
-            elevation="3"
-            class="font-weight-bold px-6"
-            @click="isAddDialogOpen = true"
-          >
-            Add New Rocket
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-card>
+  <v-container class="py-8 px-4 max-w-1200">
+    <!-- Minimalist Page Header -->
+    <header class="mb-8 pb-6 border-b-light d-flex flex-column flex-md-row justify-space-between align-start align-md-center ga-4">
+      <div>
+        <div class="d-flex align-center ga-2 mb-2">
+          <span class="status-dot" />
+          <span class="text-caption font-weight-bold text-uppercase tracking-wider text-slate-500">
+            SpaceX Launch Vehicles
+          </span>
+        </div>
+        <h1 class="text-h4 text-sm-h3 font-weight-bold text-slate-900 tracking-tight mb-2">
+          Rockets Catalog
+        </h1>
+        <p class="text-body-1 text-slate-500 mb-0 max-w-600">
+          Browse orbital launch vehicles developed by SpaceX, with live specs, cost estimates, and flight histories.
+        </p>
+      </div>
 
-    <!-- Filter & Search Bar -->
+      <v-btn
+        color="primary"
+        size="large"
+        rounded="lg"
+        prepend-icon="mdi-plus"
+        class="text-none font-weight-semibold px-5 action-btn"
+        @click="isAddDialogOpen = true"
+      >
+        Add Rocket
+      </v-btn>
+    </header>
+
+    <!-- Filter & Search Section -->
     <RocketFilter
       :initial-search="store.searchQuery"
       :initial-status="store.statusFilter"
@@ -56,44 +48,45 @@
     />
 
     <!-- Empty Filter Result State -->
-    <v-card
+    <div
       v-else-if="store.filteredRockets.length === 0"
-      class="pa-8 text-center my-6"
-      rounded="lg"
-      variant="outlined"
+      class="empty-state-container pa-12 text-center my-6 rounded-xl"
     >
-      <v-avatar color="surface-variant" size="64" class="mb-4">
-        <v-icon icon="mdi-magnify-remove-outline" size="32" />
-      </v-avatar>
-      <h3 class="text-h6 font-weight-bold mb-2">No Rockets Found</h3>
-      <p class="text-body-2 text-medium-emphasis mb-4">
-        No rockets matched your current search criteria: "<strong>{{ store.searchQuery }}</strong>"
+      <div class="empty-icon-wrapper mb-3">
+        <v-icon icon="mdi-magnify" size="28" color="secondary" />
+      </div>
+      <h3 class="text-h6 font-weight-bold text-slate-900 mb-1">No matching rockets</h3>
+      <p class="text-body-2 text-slate-500 mb-4">
+        We couldn't find any rockets matching "<span class="text-slate-900 font-weight-medium">{{ store.searchQuery }}</span>".
       </p>
       <v-btn
-        variant="tonal"
-        color="primary"
-        prepend-icon="mdi-filter-remove-outline"
+        variant="outlined"
+        color="secondary"
+        rounded="lg"
+        size="small"
+        class="text-none"
+        prepend-icon="mdi-close"
         @click="resetFilters"
       >
-        Clear Filters
+        Clear filter
       </v-btn>
-    </v-card>
+    </div>
 
-    <!-- Success / Rockets Grid State -->
+    <!-- Rockets Grid State -->
     <div v-else>
-      <div class="d-flex justify-space-between align-center mb-4 px-1">
-        <span class="text-subtitle-2 text-medium-emphasis">
-          Showing <strong>{{ store.filteredRockets.length }}</strong> of {{ store.totalCount }} rockets
+      <div class="d-flex justify-space-between align-center mb-5 px-1">
+        <span class="text-body-2 font-weight-medium text-slate-500">
+          Showing <span class="text-slate-900 font-weight-bold">{{ store.filteredRockets.length }}</span> of {{ store.totalCount }} rockets
         </span>
         <v-btn
           variant="text"
           density="compact"
           size="small"
           prepend-icon="mdi-refresh"
-          color="primary"
+          class="text-none font-weight-medium text-slate-600"
           @click="refreshData"
         >
-          Refresh
+          Refresh Data
         </v-btn>
       </div>
 
@@ -104,6 +97,7 @@
           cols="12"
           sm="6"
           lg="4"
+          class="d-flex"
         >
           <RocketCard :rocket="rocket" />
         </v-col>
@@ -116,16 +110,18 @@
       @submit="handleAddNewRocket"
     />
 
-    <!-- Success Snackbar Notification -->
+    <!-- Minimalist Toast Notification -->
     <v-snackbar
       v-model="showSnackbar"
-      color="success"
-      location="top right"
+      color="surface"
+      location="bottom right"
       timeout="3500"
+      rounded="lg"
+      class="custom-snackbar"
     >
-      <div class="d-flex align-center">
-        <v-icon icon="mdi-check-circle" class="mr-2" />
-        <span>{{ snackbarMessage }}</span>
+      <div class="d-flex align-center text-slate-900 py-1">
+        <v-icon icon="mdi-check-circle" color="success" class="mr-2" size="20" />
+        <span class="text-body-2 font-weight-medium">{{ snackbarMessage }}</span>
       </div>
     </v-snackbar>
   </v-container>
@@ -170,18 +166,57 @@ function refreshData() {
 
 function handleAddNewRocket(newRocketInput: NewRocketInput) {
   const created = store.addNewRocket(newRocketInput)
-  snackbarMessage.value = `Rocket "${created.full_name}" added successfully!`
+  snackbarMessage.value = `"${created.full_name}" added to fleet.`
   showSnackbar.value = true
 }
 </script>
 
 <style scoped>
-.hero-card {
-  background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 50%, #1e3a8a 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.border-b-light {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #059669;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+
+.tracking-tight {
+  letter-spacing: -0.025em;
 }
 
 .max-w-600 {
   max-width: 600px;
+}
+
+.action-btn {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+.empty-state-container {
+  background-color: #ffffff;
+  border: 1px dashed #cbd5e1;
+}
+
+.empty-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: #f1f5f9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-snackbar :deep(.v-snackbar__wrapper) {
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 </style>
