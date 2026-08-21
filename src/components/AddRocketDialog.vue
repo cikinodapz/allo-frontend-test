@@ -1,14 +1,15 @@
 <template>
   <v-dialog
     :model-value="modelValue"
-    max-width="580"
+    max-width="520"
     persistent
     @update:model-value="$emit('update:modelValue', $event)"
   >
-    <v-card rounded="2xl" class="dialog-card pa-2 bg-white">
-      <v-card-title class="d-flex justify-space-between align-center px-4 pt-4 pb-1">
+    <v-card rounded="xl" class="dialog-card pa-1 bg-white">
+      <!-- Compact Header -->
+      <v-card-title class="d-flex justify-space-between align-center px-4 pt-3 pb-1">
         <div>
-          <span class="text-h6 font-weight-bold text-slate-900 d-block">Add New Rocket</span>
+          <span class="text-subtitle-1 font-weight-bold text-slate-900 d-block">Add New Rocket</span>
           <span class="text-caption text-slate-500 font-weight-normal">
             Add a custom launch vehicle configuration to your local fleet.
           </span>
@@ -16,15 +17,16 @@
         <v-btn
           icon="mdi-close"
           variant="text"
-          size="small"
+          size="x-small"
           class="text-slate-400"
           @click="closeDialog"
         />
       </v-card-title>
 
-      <v-divider class="my-3 border-subtle" />
+      <v-divider class="my-2 border-subtle" />
 
-      <v-card-text class="px-4 py-2">
+      <!-- Compact Form Body -->
+      <v-card-text class="px-4 py-1">
         <v-form ref="formRef" v-model="isFormValid" @submit.prevent="handleSubmit">
           <v-row dense>
             <!-- Full Name (Required) -->
@@ -34,58 +36,66 @@
                 label="Full Name *"
                 placeholder="e.g. Starship Block 2"
                 variant="outlined"
-                density="comfortable"
+                density="compact"
                 rounded="lg"
+                hide-details="auto"
+                class="mb-2"
                 :rules="[rules.required]"
               />
             </v-col>
 
-            <!-- Short / Base Name -->
-            <v-col cols="12" sm="6">
+            <!-- Short Name & Country -->
+            <v-col cols="6">
               <v-text-field
                 v-model="form.name"
                 label="Short Name"
                 placeholder="e.g. Starship"
                 variant="outlined"
-                density="comfortable"
+                density="compact"
                 rounded="lg"
+                hide-details="auto"
+                class="mb-2"
               />
             </v-col>
 
-            <!-- Country Code -->
-            <v-col cols="12" sm="6">
+            <v-col cols="6">
               <v-text-field
                 v-model="form.country_code"
                 label="Country Code"
                 placeholder="e.g. USA"
                 variant="outlined"
-                density="comfortable"
+                density="compact"
                 rounded="lg"
+                hide-details="auto"
+                class="mb-2"
               />
             </v-col>
 
-            <!-- Cost per launch -->
-            <v-col cols="12" sm="6">
+            <!-- Cost & Maiden Flight Date -->
+            <v-col cols="6">
               <v-text-field
                 v-model="form.launch_cost"
-                label="Cost Per Launch (USD)"
+                label="Cost / Launch ($)"
                 placeholder="e.g. 10000000"
                 variant="outlined"
-                density="comfortable"
+                density="compact"
                 rounded="lg"
+                hide-details="auto"
+                class="mb-2"
                 :rules="[rules.numericOrEmpty]"
               />
             </v-col>
 
-            <!-- Maiden Flight Date -->
-            <v-col cols="12" sm="6">
+            <v-col cols="6">
               <v-text-field
                 v-model="form.maiden_flight"
                 label="First Flight Date"
                 placeholder="e.g. 2026-10-15"
                 variant="outlined"
-                density="comfortable"
+                density="compact"
                 rounded="lg"
+                hide-details="auto"
+                class="mb-2"
               />
             </v-col>
 
@@ -93,52 +103,57 @@
             <v-col cols="12">
               <v-text-field
                 v-model="form.image_url"
-                label="Image URL"
+                label="Image URL (Optional)"
                 placeholder="https://example.com/rocket.jpg"
                 variant="outlined"
-                density="comfortable"
+                density="compact"
                 rounded="lg"
-                hint="Leave empty to use high-res default fallback image"
-                persistent-hint
+                hide-details="auto"
+                class="mb-2"
               />
             </v-col>
 
             <!-- Description -->
-            <v-col cols="12" class="mt-2">
+            <v-col cols="12">
               <v-textarea
                 v-model="form.description"
                 label="Rocket Description *"
-                placeholder="Provide details about the rocket's stages, payloads, and mission profile..."
+                placeholder="Provide a brief description of the rocket's mission and specs..."
                 variant="outlined"
-                density="comfortable"
-                rows="3"
+                density="compact"
+                rows="2"
                 rounded="lg"
+                hide-details="auto"
+                class="mb-2"
                 :rules="[rules.required]"
               />
             </v-col>
 
             <!-- Status Switch -->
-            <v-col cols="12" class="pt-2">
+            <v-col cols="12" class="d-flex align-center justify-space-between pt-1">
               <v-switch
                 v-model="form.active"
                 color="success"
                 label="Active Launch Vehicle"
                 density="compact"
                 hide-details
+                class="compact-switch"
               />
             </v-col>
           </v-row>
         </v-form>
       </v-card-text>
 
-      <v-divider class="my-3 border-subtle" />
+      <v-divider class="my-2 border-subtle" />
 
-      <v-card-actions class="px-4 pb-4 pt-1">
+      <!-- Compact Actions -->
+      <v-card-actions class="px-4 pb-3 pt-1">
         <v-spacer />
         <v-btn
           variant="text"
           rounded="lg"
-          class="text-none font-weight-medium text-slate-600"
+          size="small"
+          class="text-none font-weight-medium text-slate-600 px-3"
           @click="closeDialog"
         >
           Cancel
@@ -147,7 +162,8 @@
           color="primary"
           variant="flat"
           rounded="lg"
-          class="text-none font-weight-semibold px-5 action-btn"
+          size="small"
+          class="text-none font-weight-semibold px-4 action-btn"
           :disabled="!isFormValid"
           @click="handleSubmit"
         >
@@ -188,8 +204,8 @@ const initialFormState = (): NewRocketInput => ({
 const form = reactive<NewRocketInput>(initialFormState())
 
 const rules = {
-  required: (v: string) => Boolean(v && v.trim().length > 0) || 'This field is required.',
-  numericOrEmpty: (v: string) => !v || !isNaN(Number(v)) || 'Must be a valid number.',
+  required: (v: string) => Boolean(v && v.trim().length > 0) || 'Required field.',
+  numericOrEmpty: (v: string) => !v || !isNaN(Number(v)) || 'Must be a number.',
 }
 
 watch(
@@ -227,7 +243,7 @@ function handleSubmit() {
 <style scoped>
 .dialog-card {
   border: 1px solid #e2e8f0;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
 }
 
 .border-subtle {
@@ -237,5 +253,9 @@ function handleSubmit() {
 .action-btn {
   background-color: #0f172a !important;
   color: #ffffff !important;
+}
+
+.compact-switch :deep(.v-selection-control) {
+  min-height: 32px;
 }
 </style>
