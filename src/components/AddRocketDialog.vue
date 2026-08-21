@@ -25,7 +25,7 @@
 
       <v-divider class="my-2 border-subtle" />
 
-      <!-- Form Body with Strict Validation -->
+      <!-- Form Body with Numeric Blocker and Calendar Datepicker -->
       <v-card-text class="px-4 py-1">
         <v-form ref="formRef" v-model="isFormValid" @submit.prevent="handleSubmit">
           <v-row dense>
@@ -71,33 +71,35 @@
               />
             </v-col>
 
-            <!-- Cost per Launch (Numeric Validation) -->
+            <!-- Cost per Launch (Strict Numeric Input with Keystroke Blocker) -->
             <v-col cols="6">
               <v-text-field
                 v-model="form.launch_cost"
                 label="Cost / Launch ($)"
                 placeholder="e.g. 10000000"
+                type="number"
+                min="0"
                 variant="outlined"
                 density="compact"
                 rounded="lg"
                 hide-details="auto"
                 class="mb-2"
                 :rules="[rules.positiveNumberOrEmpty]"
+                @keypress="preventNonNumeric"
               />
             </v-col>
 
-            <!-- Maiden Flight Date (Date Format Validation) -->
+            <!-- Maiden Flight Date (Interactive Calendar Picker) -->
             <v-col cols="6">
               <v-text-field
                 v-model="form.maiden_flight"
                 label="First Flight Date"
-                placeholder="YYYY-MM-DD"
+                type="date"
                 variant="outlined"
                 density="compact"
                 rounded="lg"
                 hide-details="auto"
-                class="mb-2"
-                :rules="[rules.dateFormatOrEmpty]"
+                class="mb-2 custom-date-input"
               />
             </v-col>
 
@@ -211,19 +213,24 @@ const rules = {
     if (!v || v.trim() === '') return true
     const clean = v.trim()
     const isNum = /^\d+(\.\d+)?$/.test(clean)
-    return (isNum && Number(clean) >= 0) || 'Must be a valid positive number (e.g. 10000000).'
-  },
-  dateFormatOrEmpty: (v: string) => {
-    if (!v || v.trim() === '') return true
-    const isFormat = /^\d{4}-\d{2}-\d{2}$/.test(v.trim())
-    if (!isFormat) return 'Format must be YYYY-MM-DD (e.g. 2026-10-15).'
-    const date = new Date(v.trim())
-    return !isNaN(date.getTime()) || 'Invalid calendar date.'
+    return (isNum && Number(clean) >= 0) || 'Must be a valid positive number.'
   },
   urlOrEmpty: (v: string) => {
     if (!v || v.trim() === '') return true
     return /^https?:\/\/.+/.test(v.trim()) || 'Must be a valid URL starting with http:// or https://'
   },
+}
+
+/**
+ * Keystroke blocker: completely prevents typing non-numeric characters in cost input
+ */
+function preventNonNumeric(event: KeyboardEvent) {
+  // Allow digits 0-9
+  if (/[0-9]/.test(event.key)) {
+    return
+  }
+  // Disallow all alphabet, symbols, and negative sign
+  event.preventDefault()
 }
 
 watch(
@@ -251,9 +258,9 @@ async function handleSubmit() {
     full_name: form.full_name.trim(),
     description: form.description.trim(),
     image_url: form.image_url?.trim() || undefined,
-    launch_cost: form.launch_cost?.trim() || undefined,
+    launch_cost: form.launch_cost ? String(form.launch_cost).trim() : undefined,
     country_code: form.country_code?.trim() || 'USA',
-    maiden_flight: form.maiden_flight?.trim() || undefined,
+    maiden_flight: form.maiden_flight ? form.maiden_flight.trim() : undefined,
     active: form.active ?? true,
   }
 
@@ -279,5 +286,15 @@ async function handleSubmit() {
 
 .compact-switch :deep(.v-selection-control) {
   min-height: 32px;
+}
+
+/* Ensure native calendar picker icon displays cleanly */
+.custom-date-input :deep(input[type="date"]::-webkit-calendar-picker-indicator) {
+  cursor: pointer;
+  filter: opacity(0.6);
+}
+
+.custom-date-input :deep(input[type="date"]::-webkit-calendar-picker-indicator:hover) {
+  filter: opacity(1);
 }
 </style>
