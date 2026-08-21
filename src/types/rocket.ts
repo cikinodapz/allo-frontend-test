@@ -34,6 +34,8 @@ export interface Rocket {
   successful_launches?: number
   failed_launches?: number
   pending_launches?: number
+  wiki_url?: string | null
+  info_url?: string | null
   isLocal?: boolean
 }
 
