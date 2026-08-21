@@ -341,7 +341,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRocketStore } from '@/stores/rocketStore'
 import { formatCurrency, formatDate, DEFAULT_ROCKET_IMAGE } from '@/utils/formatters'
@@ -376,6 +376,15 @@ function loadData() {
     store.fetchRocketDetail(id)
   }
 }
+
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      store.fetchRocketDetail(newId as string)
+    }
+  }
+)
 
 function goBack() {
   router.push('/')

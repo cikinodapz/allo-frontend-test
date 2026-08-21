@@ -79,13 +79,14 @@
                 placeholder="e.g. 10000000"
                 type="number"
                 min="0"
+                step="any"
                 variant="outlined"
                 density="compact"
                 rounded="lg"
                 hide-details="auto"
                 class="mb-2"
                 :rules="[rules.positiveNumberOrEmpty]"
-                @keypress="preventNonNumeric"
+                @keydown="preventNonNumeric"
               />
             </v-col>
 
@@ -222,14 +223,29 @@ const rules = {
 }
 
 /**
- * Keystroke blocker: completely prevents typing non-numeric characters in cost input
+ * Keystroke blocker: allows positive numbers, decimals, navigation, and editing shortcuts
  */
 function preventNonNumeric(event: KeyboardEvent) {
-  // Allow digits 0-9
+  // Allow navigation, editing keys, and modifier combinations (Ctrl/Cmd)
+  if (
+    ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Home', 'End'].includes(event.key) ||
+    event.ctrlKey ||
+    event.metaKey
+  ) {
+    return
+  }
+
+  // Allow digits
   if (/[0-9]/.test(event.key)) {
     return
   }
-  // Disallow all alphabet, symbols, and negative sign
+
+  // Allow decimal point if not already typed
+  if (event.key === '.' && (!form.launch_cost || !String(form.launch_cost).includes('.'))) {
+    return
+  }
+
+  // Disallow any other non-numeric character
   event.preventDefault()
 }
 

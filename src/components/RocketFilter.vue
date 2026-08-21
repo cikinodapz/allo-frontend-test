@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps<{
   initialSearch?: string
@@ -67,6 +67,21 @@ const emit = defineEmits<{
 
 const search = ref(props.initialSearch || '')
 const status = ref<'all' | 'active' | 'inactive'>(props.initialStatus || 'all')
+
+// Sync local refs when props change (e.g. when parent or store resets filters)
+watch(
+  () => props.initialSearch,
+  (newVal) => {
+    search.value = newVal || ''
+  }
+)
+
+watch(
+  () => props.initialStatus,
+  (newVal) => {
+    status.value = newVal || 'all'
+  }
+)
 
 function onSearchUpdate(val: string | null) {
   emit('update:search', val || '')
